@@ -1,6 +1,6 @@
-a/**
+/**
  * WhatsApp Bot Script with Web QR Interface
- * Optimized for Koyeb Hosting
+ * Optimized for Koyeb Hosting with Docker
  */
 
 const fs = require('fs');
@@ -16,17 +16,17 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Koyeb මගින් ලබාදෙන PORT එක ලබාගැනීම (වෙනස් කරන ලදී)
+// Koyeb මගින් ලබාදෙන PORT එක ලබාගැනීම
 const PORT = process.env.PORT || 8600; 
 
 // Serve static files from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize WhatsApp Client (Koyeb/Linux සඳහා සකස් කරන ලදී)
+// Initialize WhatsApp Client (Koyeb/Linux සඳහා විශේෂයෙන් සකස් කරන ලදී)
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        executablePath: '/usr/bin/google-chrome-stable', // Koyeb සඳහා අත්‍යවශ්‍යයි
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -146,7 +146,6 @@ client.on('message', async (message) => {
     };
 
     if (text === '!meme') {
-        // සර්වර් එකේ වැඩ කිරීමට path එක වෙනස් කරන ලදී
         const memeFolder = path.join(__dirname, 'memes'); 
 
         try {
@@ -173,7 +172,7 @@ client.on('message', async (message) => {
         return;
     }
 
-    // --- YOUR CUSTOM COMMANDS (එලෙසම තබා ඇත) ---
+    // --- YOUR CUSTOM COMMANDS ---
     if (text === 'hi' || text === 'hello' || text === 'h' || text === 'hy' || text === 'hey'| text === 'v2ray'| text === 'hyperv2ray') {
         replyWithMention(`
             *Hi! 👋 Welcome to Hyper V2Ray. How can we help you today? 😊*
@@ -251,7 +250,7 @@ client.on('message', async (message) => {
 *🛜Low Ping*
 *No Data Limit*
 
-​📱 භාවිතා කරන්නේ කොහොමද?
+📱 භාවිතා කරන්නේ කොහොමද?
 
 අප ලබාදෙන කුඩා Config Code එක App එකට ඇතුළත් කර "Connect" කිරීම පමණක් ප්‍රමාණවත් වේ.
 
@@ -276,12 +275,12 @@ https://sourceforge.net/projects/netmodhttp/files/Setup/NetMod_x64%28Latest%29.e
 
     if (text === '2') {
         replyWithMention(`
-        *🛡️​Hyper V2Ray🛡️*
+        *🛡️Hyper V2Ray🛡️*
 
 The Ultimate High-Speed Solution🚀
-​ඔබේ සාමාන්‍ය Data පැකේජයෙන් උපරිම ප්‍රයෝජන ගන්න! 💯💥
+ඔබේ සාමාන්‍ය Data පැකේජයෙන් උපරිම ප්‍රයෝජන ගන්න! 💯💥
 
-​⚡Features:
+⚡Features:
 
 📥 High Speed Downloading
 
@@ -295,7 +294,7 @@ The Ultimate High-Speed Solution🚀
 
 🌐 Compatible with All Routers & Mobiles
 
-​☁️ Supported Packages:
+☁️ Supported Packages:
 
 💫Dialog SIM
 •Fun Blaster 348 - 20GB (30Day)
@@ -322,11 +321,11 @@ The Ultimate High-Speed Solution🚀
 •Meet Lite 195 - 30GB (30Day)
 •Meet Max 490 - 100GB (30Day)
 
-​💳 Payment Methods:
+💳 Payment Methods:
 🏦 Bank Transfer
 💰 Ezcash
 
-​📩 සම්බන්ධතාවය ලබා ගැනීමට දැන්ම අපිට Message එකක් එවන්න!
+📩 සම්බන්ධතාවය ලබා ගැනීමට දැන්ම අපිට Message එකක් එවන්න!
 
 Whatsapp👇
 
@@ -360,8 +359,7 @@ Here are our available V2Ray plans with the latest pricing:
 🌟 Special Plans 🌟  
 These are optional premium long-term plans:
 
-🗓️ *3-Month Plan – 1,599 LKR*  
-• *VIP PLAN ONLY*
+🗓️ *3-Month Plan – 1,599 LKR* • *VIP PLAN ONLY*
 •  Valid for 3 months  
 •  Unlimited BandWidth
 •⁠  ⁠High Speed Servers
@@ -372,11 +370,11 @@ These are optional premium long-term plans:
 •⁠  ⁠High Speed Servers
 
 
-​💳 Payment Methods:
+💳 Payment Methods:
 🏦 Bank Transfer
 💰 Ezcash
 
-​📩 සම්බන්ධතාවය ලබා ගැනීමට දැන්ම අපිට Message එකක් එවන්න!
+📩 සම්බන්ධතාවය ලබා ගැනීමට දැන්ම අපිට Message එකක් එවන්න!
 
 Whatsapp👇
 
@@ -387,50 +385,50 @@ https://wa.me/+94766893639?text=Hyper_V2Ray
 
     if (text === '4') {
         replyWithMention(`
-        *​🚀HyperV2ray සමඟින් සුපිරි වේගවත් ඉන්ටර්නෙට් අත්දැකීමක්!*
+        *🚀HyperV2ray සමඟින් සුපිරි වේගවත් ඉන්ටර්නෙට් අත්දැකීමක්!*
 
-​ඔයත් Fast සහ Secure connection එකක් සොයන කෙනෙක්ද?
+ඔයත් Fast සහ Secure connection එකක් සොයන කෙනෙක්ද?
 එහෙනම් අදම අපේ වෙබ් අඩවියට පිවිසෙන්න.🔒
 
-​🌐 Visit Website: https://hyperv2ray.iceiy.com
+🌐 Visit Website: https://hyperv2ray.iceiy.com
 
-​අපගේ විශේෂත්වයන්:
+අපගේ විශේෂත්වයන්:
 
 ✅ High Speed
 ✅ Privacy
 ✅ Reliable Service
 
-​අදම අපේ සේවාව ලබාගෙන වෙනස වටහා ගන්න! 🌍✨
+අදම අපේ සේවාව ලබාගෙන වෙනස වටහා ගන්න! 🌍✨
 
 *Hyper V2Ray*`);
     }
 
     if (text === '5') {
         replyWithMention(`
-        *​🚀Hyper V2Ray - Get Connected!*
+        *🚀Hyper V2Ray - Get Connected!*
 
-​For more information or support regarding our services, please reach out to us via:
+For more information or support regarding our services, please reach out to us via:
 
-​🪀 WhatsApp: 
+🪀 WhatsApp: 
 https://wa.me/+94766893639?text=Hyper_V2Ray
 
-​🌐 Website:
+🌐 Website:
 https://hyperv2ray.iceiy.com
 
-​✉️ Email: dinethinduwara999@gmail.com
+✉️ Email: dinethinduwara999@gmail.com
 
-​Our team is always ready to assist you! 🤝✨
+Our team is always ready to assist you! 🤝✨
 
-*​Hyper V2Ray 🛡️*`);
+*Hyper V2Ray 🛡️*`);
     }
 
     if (text === '6') {
         replyWithMention(`
-        *​🚀 HyperV2ray Chat Group  එකට අදම එකතු වෙන්න! 🌐*
+        *🚀 HyperV2ray Chat Group  එකට අදම එකතු වෙන්න! 🌐*
 
-​ඔයා ඉතා වේගවත් සහ ආරක්ෂිත V2ray Service එකක් සොයන කෙනෙක්ද? එහෙනම් අපේ official WhatsApp group එකට දැන්ම join වෙන්න!
+ඔයා ඉතා වේගවත් සහ ආරක්ෂිත V2ray Service එකක් සොයන කෙනෙක්ද? එහෙනම් අපේ official WhatsApp group එකට දැන්ම join වෙන්න!
 
-​Group එකට එකතු වීමෙන් ඔබට ලැබෙන වාසි:
+Group එකට එකතු වීමෙන් ඔබට ලැබෙන වාසි:
 
 ✅ අලුත්ම Fast Servers සහ Updates ඉක්මනින්ම ලබාගැනීම.
 
@@ -438,10 +436,10 @@ https://hyperv2ray.iceiy.com
 
 ✅ විශේෂ දීමනා සහ Free accounts ගැන දැනුවත් වීම.
 
-​👇 දැන්ම පහත ලින්ක් එකෙන් Join වෙන්න:
+👇 දැන්ම පහත ලින්ක් එකෙන් Join වෙන්න:
 🔗 https://chat.whatsapp.com/CbbmLr2vVaTApSBlQ0HElx
 
-​Internet ලෝකයේ සුපිරි වේගයක් අත්විඳින්න අපිත් එක්ක එකතු වෙන්න! 💻📱✨
+Internet ලෝකයේ සුපිරි වේගයක් අත්විඳින්න අපිත් එක්ක එකතු වෙන්න! 💻📱✨
 
 
 *Hyper V2Ray*`);
@@ -449,34 +447,34 @@ https://hyperv2ray.iceiy.com
 
     if (text === '7') {
         replyWithMention(`
-        *​👋Hyper V2Ray Order🌩️*
+        *👋Hyper V2Ray Order🌩️*
 
-​ඔබේ සීමිත Package  හරහා Unlimited High-Speed Internet ලබා දීමට අප සූදානම්! 🚀💨
+ඔබේ සීමිත Package  හරහා Unlimited High-Speed Internet ලබා දීමට අප සූදානම්! 🚀💨
 
-​✅ Why Choose Us?
+✅ Why Choose Us?
 🔹 4K Ultra HD Streaming 📺
 🔹 Low-Ping Gaming 🎮
 🔹 Full Privacy 🛡️
 
-​You can place your order quickly and easily our Website:
+You can place your order quickly and easily our Website:
 
 🌐 Visit Website: 
 https://hyperv2ray.iceiy.com
 
-​📩 Or Send Us Your Details Below:
+📩 Or Send Us Your Details Below:
 
-​1️⃣ Your Name
+1️⃣ Your Name
 2️⃣ Plan
 3️⃣ Package
 
-​Example👇 
+Example👇 
 > *Name - Induwara*
 > *Plan - Standard*
 > *Package - Airtel TikTok 997 30Day*
 
-​අපි ඉක්මනින්ම ඔබව සම්බන්ධ කරගන්නෙමු! 🤝
+අපි ඉක්මනින්ම ඔබව සම්බන්ධ කරගන්නෙමු! 🤝
 
-*​Hyper V2Ray*`);
+*Hyper V2Ray*`);
     }
 
     if (text === '8') {
