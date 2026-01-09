@@ -1,7 +1,6 @@
-/**
+a/**
  * WhatsApp Bot Script with Web QR Interface
- * Run with: node bot.js
- * Access at: http://localhost:8600
+ * Optimized for Koyeb Hosting
  */
 
 const fs = require('fs');
@@ -16,15 +15,18 @@ const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
-const PORT = 8600; // Port set to 8601
+
+// Koyeb මගින් ලබාදෙන PORT එක ලබාගැනීම (වෙනස් කරන ලදී)
+const PORT = process.env.PORT || 8600; 
 
 // Serve static files from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize WhatsApp Client
+// Initialize WhatsApp Client (Koyeb/Linux සඳහා සකස් කරන ලදී)
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
+        executablePath: '/usr/bin/google-chrome-stable', // Koyeb සඳහා අත්‍යවශ්‍යයි
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -42,13 +44,11 @@ const client = new Client({
 // Generate QR and send to Web Interface
 client.on('qr', (qr) => {
     console.log('QR Code received. Generating for web...');
-    // Convert QR string to Data URL for image display
     qrcode.toDataURL(qr, (err, url) => {
         if (err) {
             console.error('Error generating QR', err);
             return;
         }
-        // Send QR to the frontend
         io.emit('qr', url);
         io.emit('message', 'QR Code Received. Please Scan.');
     });
@@ -72,30 +72,18 @@ client.on('auth_failure', msg => {
 
 // --- BOT LOGIC ---
 
-// Allowed domains
 const WHITELISTED_DOMAINS = [
-    "cloudnet.one",
-    "buy.cloudnet.one",
-    "game.cloudnet.one",
-    "cloudnet-movies.store",
-    "t.me/jnrgamestore",
-    "t.me/cloudnetv2ray",
-    "youtube.com",
-    "mediafire.com",
-    "whatsapp.com",
-    "t.me",
-    "cpaid.rf.gd",
-    "https://chat.whatsapp.com/CbbmLr2vVaTApSBlQ0HElx"
+    "cloudnet.one", "buy.cloudnet.one", "game.cloudnet.one", "cloudnet-movies.store",
+    "t.me/jnrgamestore", "t.me/cloudnetv2ray", "youtube.com", "mediafire.com",
+    "whatsapp.com", "t.me", "cpaid.rf.gd", "https://chat.whatsapp.com/CbbmLr2vVaTApSBlQ0HElx"
 ];
 
-// Banned words list
 const BANNED_WORDS = [
     "fuck", "shit", "bitch", "asshole", "nigga", "wtf", "pussy",
     "rape", "dick", "slut", "sex", "boobs", "cock", "porn",
     "පකයා", "අම්මට", "ගණිකාව", "කමක් නෑ", "කලුකතා"
 ];
 
-// Link checker
 function containsExternalLink(message) {
     const regex = /(https?:\/\/[^\s]+)/g;
     const matches = message.match(regex);
@@ -112,23 +100,18 @@ function containsExternalLink(message) {
     return false;
 }
 
-// Bad word checker
 function containsBadWords(message) {
     const text = message.toLowerCase();
     return BANNED_WORDS.some(word => text.includes(word));
 }
 
-// Message listener
 client.on('message', async (message) => {
-    // Convert message to lowercase for easy comparison
     const text = message.body.toLowerCase();
 
-    // Delete non-whitelisted links
     if (containsExternalLink(message.body)) {
         try {
             await message.delete(true);
             const contact = await message.getContact();
-            console.log(`❌ Deleted forbidden link from @${contact.number}`);
             const msg = `🛑 @${contact.number} ඔබගේ පණිවිඩය ඉවත් කරන ලදී. අවසර නොමැති ලින්ක්ස් යොමු කිරීමෙන් වලකින්න.`;
             await client.sendMessage(message.from, msg, { mentions: [contact] });
             return;
@@ -137,12 +120,10 @@ client.on('message', async (message) => {
         }
     }
 
-    // Delete bad word messages
     if (containsBadWords(message.body)) {
         try {
             await message.delete(true);
             const contact = await message.getContact();
-            console.log(`❌ Deleted bad word from @${contact.number}`);
             const msg = `⚠️ @${contact.number} ඔබගේ පණිවිඩය ඉවත් කරන ලදී. කරුණාකර අපහාසජනක වචන භාවිතය වලක්වන්න.`;
             await client.sendMessage(message.from, msg, { mentions: [contact] });
             return;
@@ -151,7 +132,6 @@ client.on('message', async (message) => {
         }
     }
 
-    // Helper reply function
     const replyWithMention = async (msgText) => {
         const chat = await message.getChat();
         if (chat.isGroup) {
@@ -165,49 +145,35 @@ client.on('message', async (message) => {
         }
     };
 
-    // New command to send a random meme
     if (text === '!meme') {
-        // NOTE: Ensure this path exists on the machine running the bot
-        const memeFolder = 'C:\\Users\\jnr\\Pictures\\meme';
+        // සර්වර් එකේ වැඩ කිරීමට path එක වෙනස් කරන ලදී
+        const memeFolder = path.join(__dirname, 'memes'); 
 
         try {
-            // Check if folder exists
             if (!fs.existsSync(memeFolder)) {
-                await message.reply('Meme folder path not found on server.');
+                await message.reply('Meme folder not found on server. Please create a "memes" folder in your project.');
                 return;
             }
-
-            // Read all files in the directory
             const files = fs.readdirSync(memeFolder);
-
-            // Filter for image files
             const imageFiles = files.filter(file => {
                 const extension = path.extname(file).toLowerCase();
                 return ['.jpg', '.jpeg', '.png', '.gif'].includes(extension);
             });
-
             if (imageFiles.length === 0) {
-                await message.reply('Sorry, there are no images in the meme folder.');
+                await message.reply('No images in the meme folder.');
                 return;
             }
-
-            // Select a random image from the list
             const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
             const imagePath = path.join(memeFolder, randomImage);
-
-            // Create and send the media object
             const media = MessageMedia.fromFilePath(imagePath);
             await client.sendMessage(message.from, media, { caption: 'Here is a random meme for you!' });
-            console.log(`✅ Sent random meme from: ${imagePath}`);
-
         } catch (error) {
-            console.error('❌ Failed to send meme:', error);
-            await message.reply('Sorry, I could not access the meme folder or send the image. Please check the folder path and permissions.');
+            await message.reply('Error accessing meme folder.');
         }
         return;
     }
 
-    // --- YOUR CUSTOM COMMANDS ---
+    // --- YOUR CUSTOM COMMANDS (එලෙසම තබා ඇත) ---
     if (text === 'hi' || text === 'hello' || text === 'h' || text === 'hy' || text === 'hey'| text === 'v2ray'| text === 'hyperv2ray') {
         replyWithMention(`
             *Hi! 👋 Welcome to Hyper V2Ray. How can we help you today? 😊*
@@ -271,8 +237,6 @@ client.on('message', async (message) => {
     if (text === 'bye') {
         replyWithMention('👋 බායි නැවත හමුවෙමු 😊');
     }
-
-    // FIX: changed 'service' (already correct)
 
     if (text === '1') {
         replyWithMention(`
@@ -527,15 +491,10 @@ https://hyperv2ray.iceiy.com
 
 *HyperV2ray Powered by Novalink ⚡*`);
     }
-
 });
 
 // START SERVER
-// Using 0.0.0.0 to listen on all IPs, including localhost and 127.0.8.1
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n===================================================`);
-    console.log(`✅ Web Server Running on: http://localhost:${PORT}`);
-    console.log(`📱 Scan the QR code by opening the link above!`);
-    console.log(`===================================================\n`);
+    console.log(`✅ Web Server Running on port: ${PORT}`);
     client.initialize();
 });
