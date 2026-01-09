@@ -12,4 +12,5 @@
     "qrcode": "^1.5.3",
     "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#webpack-exodus",
     "puppeteer": "^21.0.0"
+  }
 }
