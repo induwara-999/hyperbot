@@ -26,15 +26,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
+        executablePath: '/usr/bin/google-chrome-stable',
+        headless: true, // මෙය true විය යුතුය
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
+            '--disable-dev-shm-usage'
         ],
     }
 });
