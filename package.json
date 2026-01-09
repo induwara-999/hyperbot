@@ -11,6 +11,5 @@
     "socket.io": "^4.7.2",
     "qrcode": "^1.5.3",
     "whatsapp-web.js": "latest",
-    "puppeteer": "^21.0.0"
-  }
+    "puppeteer": "latest"
 }
