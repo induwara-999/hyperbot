@@ -32,11 +32,11 @@ const client = new Client({
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--no-zygote'
+            '--no-zygote',
+            '--disable-gpu'
         ],
     }
 });
-
 // --- CLIENT EVENTS ---
 
 // Generate QR and send to Web Interface
