@@ -12,4 +12,5 @@
     "qrcode": "^1.5.3",
     "whatsapp-web.js": "latest",
     "puppeteer": "latest"
+  }
 }
