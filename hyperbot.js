@@ -27,14 +27,12 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         executablePath: '/usr/bin/google-chrome-stable',
-        headless: true, // මෙය true ලෙසම තබන්න
+        headless: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--no-zygote',
-            '--single-process'
+            '--no-zygote'
         ],
     }
 });
