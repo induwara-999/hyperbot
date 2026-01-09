@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyper V2Ray Bot - QR Login</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+        }
+        h1 { color: #075e54; margin-bottom: 10px; }
+        #status { margin-bottom: 20px; font-weight: bold; color: #555; }
+        #qrcode-container {
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #qrcode {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .footer { margin-top: 20px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Hyper V2Ray Bot</h1>
+        <div id="status">Waiting for server...</div>
+        
+        <div id="qrcode-container">
+            <img id="qrcode" src="" alt="QR Code" style="display:none;">
+        </div>
+
+        <div class="footer">Powered by WhatsApp-Web.js</div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const qrcodeImg = document.getElementById('qrcode');
+        const statusDiv = document.getElementById('status');
+
+        socket.on('message', (msg) => {
+            statusDiv.innerText = msg;
+        });
+
+        socket.on('qr', (url) => {
+            qrcodeImg.src = url;
+            qrcodeImg.style.display = 'block';
+            statusDiv.innerText = 'Scan the QR code below:';
+        });
+
+        socket.on('ready', () => {
+            qrcodeImg.style.display = 'none';
+            statusDiv.innerHTML = '<span style="color: #25d366;">✅ Bot is Connected and Ready!</span>';
+        });
+
+        socket.on('authenticated', () => {
+            statusDiv.innerText = 'Authenticated! Initializing...';
+            qrcodeImg.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
